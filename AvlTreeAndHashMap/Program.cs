@@ -7,14 +7,15 @@ namespace AvlTreeAndHashMap
         static void Main(string[] args)
         {
             var avlTree = new AVLTree<int, string>();
-            var hashTable = new HashTable<int, string>(10);
+            var hashMap = new HashMap<int, string>(10);
 
             while (true)
             {
-                Console.WriteLine("Выберите структуру данных:");
-                Console.WriteLine("1. АВЛ-дерево");
-                Console.WriteLine("2. Хеш-таблица");
-                Console.WriteLine("3. Выход");
+                Console.WriteLine("Выберите опцию:");
+                Console.WriteLine("1. Управление АВЛ-деревом");
+                Console.WriteLine("2. Управление хеш-таблицей");
+                Console.WriteLine("3. Тестирование производительности");
+                Console.WriteLine("4. Выход");
                 var choice = Console.ReadLine();
 
                 switch (choice)
@@ -23,9 +24,15 @@ namespace AvlTreeAndHashMap
                         ManageAVLTree(avlTree);
                         break;
                     case "2":
-                        ManageHashTable(hashTable);
+                        ManageHashTable(hashMap);
                         break;
                     case "3":
+                        Console.WriteLine("Введите количество операций для тестирования:");
+                        int numberOfOperations = int.Parse(Console.ReadLine());
+                        var tester = new DataTester(numberOfOperations);
+                        tester.RunTests();
+                        break;
+                    case "4":
                         return;
                     default:
                         Console.WriteLine("Неверный выбор. Попробуйте еще раз.");
@@ -88,7 +95,7 @@ namespace AvlTreeAndHashMap
             }
         }
 
-        static void ManageHashTable(HashTable<int, string> hashTable)
+        static void ManageHashTable(HashMap<int, string> hashMap)
         {
             while (true)
             {
@@ -106,13 +113,13 @@ namespace AvlTreeAndHashMap
                         int key = int.Parse(Console.ReadLine());
                         Console.WriteLine("Введите значение:");
                         string value = Console.ReadLine();
-                        hashTable.Add(key, value);
+                        hashMap.Add(key, value);
                         Console.WriteLine("Элемент добавлен.");
                         break;
                     case "2":
                         Console.WriteLine("Введите ключ для удаления:");
                         key = int.Parse(Console.ReadLine());
-                        if (hashTable.Remove(key))
+                        if (hashMap.Remove(key))
                         {
                             Console.WriteLine("Элемент удален.");
                         }
@@ -124,7 +131,7 @@ namespace AvlTreeAndHashMap
                     case "3":
                         Console.WriteLine("Введите ключ для поиска:");
                         key = int.Parse(Console.ReadLine());
-                        if (hashTable.TryGetValue(key, out value))
+                        if (hashMap.TryGetValue(key, out value))
                         {
                             Console.WriteLine($"Найдено значение: {value}");
                         }

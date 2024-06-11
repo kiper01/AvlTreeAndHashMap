@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class HashTable<TKey, TValue>
+public class HashMap<TKey, TValue>
 {
     private readonly int size;
     private readonly LinkedList<KeyValuePair<TKey, TValue>>[] buckets; // методом цепочек (списков) для разрешения коллизий
 
-    public HashTable(int size)
+    public HashMap(int size)
     {
         this.size = size;
         buckets = new LinkedList<KeyValuePair<TKey, TValue>>[size];
