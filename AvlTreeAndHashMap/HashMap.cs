@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class HashTable<TKey, TValue>
 {
     private readonly int size;
-    private readonly LinkedList<KeyValuePair<TKey, TValue>>[] buckets; // методом цепочек (списков)
+    private readonly LinkedList<KeyValuePair<TKey, TValue>>[] buckets; // методом цепочек (списков) для разрешения коллизий
 
     public HashTable(int size)
     {
