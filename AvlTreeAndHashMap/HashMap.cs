@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-public class HashMap<TKey, TValue>
+﻿public class HashMap<TKey, TValue>
 {
     private readonly int size;
     private readonly LinkedList<KeyValuePair<TKey, TValue>>[] buckets; // методом цепочек (списков) для разрешения коллизий
+
+    public int Size => size;
 
     public HashMap(int size)
     {
@@ -80,5 +79,10 @@ public class HashMap<TKey, TValue>
 
         value = default(TValue);
         return false;
+    }
+
+    public LinkedList<KeyValuePair<TKey, TValue>> GetBucket(int index) // для визуализатора
+    {
+        return buckets[index];
     }
 }

@@ -1,14 +1,12 @@
-﻿using System;
-
-public class AVLTree<TKey, TValue> where TKey : IComparable<TKey>
+﻿public class AVLTree<TKey, TValue> where TKey : IComparable<TKey>
 {
-    private class Node
+    public class Node
     {
-        public TKey Key;
-        public TValue Value;
-        public Node Left;
-        public Node Right;
-        public int Height;
+        public TKey Key { get; set; }
+        public TValue Value { get; set; }
+        public Node Left { get; set; }
+        public Node Right { get; set; }
+        public int Height { get; set; }
 
         public Node(TKey key, TValue value)
         {
@@ -31,14 +29,21 @@ public class AVLTree<TKey, TValue> where TKey : IComparable<TKey>
             return new Node(key, value);
 
         int cmp = key.CompareTo(node.Key);
-
         if (cmp < 0)
+        {
             node.Left = Add(node.Left, key, value);
+        }
         else if (cmp > 0)
+        {
             node.Right = Add(node.Right, key, value);
+        }
         else
+        {
             node.Value = value;
+            return node;
+        }
 
+        node.Height = 1 + Math.Max(Height(node.Left), Height(node.Right));
         return Balance(node);
     }
 
@@ -56,125 +61,120 @@ public class AVLTree<TKey, TValue> where TKey : IComparable<TKey>
 
         bool removed;
         int cmp = key.CompareTo(node.Key);
-
         if (cmp < 0)
+        {
             (node.Left, removed) = Remove(node.Left, key);
+        }
         else if (cmp > 0)
+        {
             (node.Right, removed) = Remove(node.Right, key);
+        }
         else
         {
             removed = true;
-            if (node.Left == null || node.Right == null)
-            {
-                node = (node.Left ?? node.Right);
-            }
-            else
-            {
-                var min = GetMin(node.Right);
-                node.Key = min.Key;
-                node.Value = min.Value;
-                (node.Right, _) = Remove(node.Right, min.Key);
-            }
+            if (node.Left == null) return (node.Right, true);
+            if (node.Right == null) return (node.Left, true);
+
+            Node temp = node;
+            node = Min(temp.Right);
+            node.Right = RemoveMin(temp.Right);
+            node.Left = temp.Left;
         }
 
-        return (node == null ? null : Balance(node), removed);
+        node.Height = Math.Max(Height(node.Left), Height(node.Right)) + 1;
+        return (Balance(node), removed);
     }
 
     public bool TryGetValue(TKey key, out TValue value)
     {
-        var node = GetNode(root, key);
+        Node node = GetNode(root, key);
         if (node != null)
         {
             value = node.Value;
             return true;
         }
-
         value = default(TValue);
         return false;
     }
 
     private Node GetNode(Node node, TKey key)
     {
-        while (node != null)
-        {
-            int cmp = key.CompareTo(node.Key);
-            if (cmp < 0)
-                node = node.Left;
-            else if (cmp > 0)
-                node = node.Right;
-            else
-                return node;
-        }
+        if (node == null)
+            return null;
 
-        return null;
+        int cmp = key.CompareTo(node.Key);
+        if (cmp < 0)
+            return GetNode(node.Left, key);
+        else if (cmp > 0)
+            return GetNode(node.Right, key);
+        else
+            return node;
     }
 
-    private Node GetMin(Node node)
+    private Node Min(Node node)
     {
-        while (node.Left != null)
-            node = node.Left;
-        return node;
+        if (node.Left == null) return node;
+        else return Min(node.Left);
+    }
+
+    private Node RemoveMin(Node node)
+    {
+        if (node.Left == null)
+            return node.Right;
+        node.Left = RemoveMin(node.Left);
+        node.Height = Math.Max(Height(node.Left), Height(node.Right)) + 1;
+        return Balance(node);
+    }
+
+    private int Height(Node node)
+    {
+        return node == null ? 0 : node.Height;
     }
 
     private Node Balance(Node node)
     {
-        UpdateHeight(node);
-
-        int balance = GetBalance(node);
-
-        if (balance > 1)
+        if (BalanceFactor(node) > 1)
         {
-            if (GetBalance(node.Left) < 0)
-                node.Left = RotateLeft(node.Left);
-            return RotateRight(node);
-        }
-
-        if (balance < -1)
-        {
-            if (GetBalance(node.Right) > 0)
+            if (BalanceFactor(node.Right) < 0)
                 node.Right = RotateRight(node.Right);
-            return RotateLeft(node);
+            node = RotateLeft(node);
         }
-
+        else if (BalanceFactor(node) < -1)
+        {
+            if (BalanceFactor(node.Left) > 0)
+                node.Left = RotateLeft(node.Left);
+            node = RotateRight(node);
+        }
         return node;
     }
 
-    private Node RotateRight(Node y)
+    private int BalanceFactor(Node node)
     {
-        var x = y.Left;
-        y.Left = x.Right;
-        x.Right = y;
-
-        UpdateHeight(y);
-        UpdateHeight(x);
-
-        return x;
+        return node == null ? 0 : Height(node.Right) - Height(node.Left);
     }
 
-    private Node RotateLeft(Node x)
+    private Node RotateRight(Node node)
     {
-        var y = x.Right;
-        x.Right = y.Left;
-        y.Left = x;
-
-        UpdateHeight(x);
-        UpdateHeight(y);
-
-        return y;
+        Node temp = node.Left;
+        node.Left = temp.Right;
+        temp.Right = node;
+        node.Height = Math.Max(Height(node.Left), Height(node.Right)) + 1;
+        temp.Height = Math.Max(Height(temp.Left), Height(temp.Right)) + 1;
+        return temp;
     }
 
-    private void UpdateHeight(Node node)
+    private Node RotateLeft(Node node)
     {
-        node.Height = 1 + Math.Max(GetHeight(node.Left), GetHeight(node.Right));
+        Node temp = node.Right;
+        node.Right = temp.Left;
+        temp.Left = node;
+        node.Height = Math.Max(Height(node.Left), Height(node.Right)) + 1;
+        temp.Height = Math.Max(Height(temp.Left), Height(temp.Right)) + 1;
+        return temp;
     }
 
-    private int GetHeight(Node node)
+    public Node GetRoot()
     {
-        return node?.Height ?? 0;
-    }
-
-    private int GetBalance(Node node)
-    {
-        return node == null ? 0 : GetHeight(node.Left) - GetHeight(node.Right);
+        return root;
     }
 }

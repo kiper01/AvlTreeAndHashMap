@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AvlTreeAndHashMap
+﻿namespace DataStructures
 {
     class Program
     {
@@ -15,7 +13,8 @@ namespace AvlTreeAndHashMap
                 Console.WriteLine("1. Управление АВЛ-деревом");
                 Console.WriteLine("2. Управление хеш-таблицей");
                 Console.WriteLine("3. Тестирование производительности");
-                Console.WriteLine("4. Выход");
+                Console.WriteLine("4. Визуализация структур данных");
+                Console.WriteLine("5. Выход");
                 var choice = Console.ReadLine();
 
                 switch (choice)
@@ -24,7 +23,7 @@ namespace AvlTreeAndHashMap
                         ManageAVLTree(avlTree);
                         break;
                     case "2":
-                        ManageHashTable(hashMap);
+                        ManageHashMap(hashMap);
                         break;
                     case "3":
                         Console.WriteLine("Введите количество операций для тестирования:");
@@ -33,6 +32,9 @@ namespace AvlTreeAndHashMap
                         tester.RunTests();
                         break;
                     case "4":
+                        VisualizeDataStructures(avlTree, hashMap);
+                        break;
+                    case "5":
                         return;
                     default:
                         Console.WriteLine("Неверный выбор. Попробуйте еще раз.");
@@ -58,8 +60,8 @@ namespace AvlTreeAndHashMap
                         Console.WriteLine("Введите ключ:");
                         int key = int.Parse(Console.ReadLine());
                         Console.WriteLine("Введите значение:");
-                        string value = Console.ReadLine();
-                        avlTree.Add(key, value);
+                        string newValue = Console.ReadLine();
+                        avlTree.Add(key, newValue);
                         Console.WriteLine("Элемент добавлен.");
                         break;
                     case "2":
@@ -77,7 +79,7 @@ namespace AvlTreeAndHashMap
                     case "3":
                         Console.WriteLine("Введите ключ для поиска:");
                         key = int.Parse(Console.ReadLine());
-                        if (avlTree.TryGetValue(key, out value))
+                        if (avlTree.TryGetValue(key, out string value))
                         {
                             Console.WriteLine($"Найдено значение: {value}");
                         }
@@ -95,7 +97,7 @@ namespace AvlTreeAndHashMap
             }
         }
 
-        static void ManageHashTable(HashMap<int, string> hashMap)
+        static void ManageHashMap(HashMap<int, string> hashMap)
         {
             while (true)
             {
@@ -112,8 +114,8 @@ namespace AvlTreeAndHashMap
                         Console.WriteLine("Введите ключ:");
                         int key = int.Parse(Console.ReadLine());
                         Console.WriteLine("Введите значение:");
-                        string value = Console.ReadLine();
-                        hashMap.Add(key, value);
+                        string newValue = Console.ReadLine();
+                        hashMap.Add(key, newValue);
                         Console.WriteLine("Элемент добавлен.");
                         break;
                     case "2":
@@ -131,7 +133,7 @@ namespace AvlTreeAndHashMap
                     case "3":
                         Console.WriteLine("Введите ключ для поиска:");
                         key = int.Parse(Console.ReadLine());
-                        if (hashMap.TryGetValue(key, out value))
+                        if (hashMap.TryGetValue(key, out string value))
                         {
                             Console.WriteLine($"Найдено значение: {value}");
                         }
@@ -147,6 +149,15 @@ namespace AvlTreeAndHashMap
                         break;
                 }
             }
+        }
+
+        static void VisualizeDataStructures(AVLTree<int, string> avlTree, HashMap<int, string> hashMap)
+        {
+            Console.WriteLine("Визуализация АВЛ-дерева:");
+            Visualizer.VisualizeAVLTree(avlTree.GetRoot());
+
+            Console.WriteLine("Визуализация хеш-таблицы:");
+            Visualizer.VisualizeHashMap(hashMap);
         }
     }
 }
